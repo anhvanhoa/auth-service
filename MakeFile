@@ -1,0 +1,35 @@
+migrate-dev-up:
+	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" up
+
+migrate-dev-down:
+	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" down
+
+migrate-dev-reset:
+	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" reset
+
+migrate-dev-drop:
+	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" drop
+
+migrate-dev-create:
+	migrate create -ext sql -dir ./migrations -seq $(name)
+
+dev-docker-drop-db:
+	docker exec -it postgres_container dropdb --force -U postgres user_service_db
+
+dev-docker-create-db:
+	docker exec -it postgres_container createdb -U postgres user_service_db
+
+dev-drop-db:
+	dropdb --force -U postgres user_service_db
+
+dev-create-db:
+	createdb -U postgres user_service_db
+
+build-grpc:
+	go build -o bin/grpc-server cmd/gRPC.go
+
+run-grpc:
+	go run cmd/gRPC.go
+
+run:
+	go run cmd/main.go
