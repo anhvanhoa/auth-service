@@ -18,20 +18,21 @@ func main() {
 	cache := app.Cache
 	queueClient := app.Queue
 	discoveryConfig := discovery.DiscoveryConfig{
-		ServiceName:   env.NAME_SERVICE,
-		ServicePort:   env.PORT_GRPC,
-		ServiceHost:   env.HOST_GRPC,
-		IntervalCheck: env.INTERVAL_CHECK,
+		ServiceName:   env.NameService,
+		ServicePort:   env.PortGrpc,
+		ServiceHost:   env.HostGrpc,
+		IntervalCheck: env.IntervalCheck,
+		TimeoutCheck:  env.TimeoutCheck,
 	}
 	discoveryClient, err := discovery.NewDiscovery(&discoveryConfig)
 	if err != nil {
 		log.Fatal("Failed to create discovery client: " + err.Error())
 	}
 	discoveryClient.Register()
-	defer discoveryClient.Close(env.NAME_SERVICE)
+	defer discoveryClient.Close(env.NameService)
 
-	clientFactory := gc.NewClientFactory(env.GRPC_CLIENTS...)
-	client := clientFactory.GetClient(env.MAIL_SERVICE_ADDR)
+	clientFactory := gc.NewClientFactory(env.GrpcClients...)
+	client := clientFactory.GetClient(env.MailServiceAddr)
 	mailService := grpc_client.NewMailService(client)
 
 	authService := grpcservice.NewAuthService(db, env, log, mailService, queueClient, cache)

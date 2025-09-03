@@ -51,10 +51,10 @@ func NewAuthService(
 	saga := saga.NewSagaManager()
 	argonService := hashpass.NewArgon()
 	genUUID := goid.NewGoId().UUID()
-	tokenAccess := token.NewToken(env.JWT_SECRET.Access)
-	tokenRefresh := token.NewToken(env.JWT_SECRET.Refresh)
-	tokenAuth := token.NewToken(env.JWT_SECRET.Verify)
-	tokenForgot := token.NewToken(env.JWT_SECRET.Forgot)
+	tokenAccess := token.NewToken(env.JwtSecret.Access)
+	tokenRefresh := token.NewToken(env.JwtSecret.Refresh)
+	tokenAuth := token.NewToken(env.JwtSecret.Verify)
+	tokenForgot := token.NewToken(env.JwtSecret.Forgot)
 	return &authService{
 		env:          env,
 		log:          log,

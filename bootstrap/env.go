@@ -16,7 +16,7 @@ type jwtSecret struct {
 
 type dbCache struct {
 	Addr        string
-	DB          int
+	Db          int
 	Password    string
 	MaxIdle     int
 	MaxActive   int
@@ -26,7 +26,7 @@ type dbCache struct {
 
 type queue struct {
 	Addr        string
-	DB          int
+	Db          int
 	Password    string
 	MaxIdle     int
 	MaxActive   int
@@ -37,29 +37,29 @@ type queue struct {
 }
 
 type Env struct {
-	NODE_ENV string
+	NodeEnv string `mapstructure:"node_env"`
 
-	URL_DB string
+	UrlDb string `mapstructure:"url_db"`
 
-	NAME_SERVICE   string
-	PORT_GRPC      int
-	HOST_GRPC      string
-	INTERVAL_CHECK string
-	TIMEOUT_CHECK  string
+	NameService   string `mapstructure:"name_service"`
+	PortGrpc      int    `mapstructure:"port_grpc"`
+	HostGrpc      string `mapstructure:"host_grpc"`
+	IntervalCheck string `mapstructure:"interval_check"`
+	TimeoutCheck  string `mapstructure:"timeout_check"`
 
-	DB_CACHE *dbCache
+	DbCache *dbCache `mapstructure:"db_cache"`
 
-	SECRET_OTP string
+	SecretOtp string `mapstructure:"secret_otp"`
 
-	QUEUE *queue
+	Queue *queue `mapstructure:"queue"`
 
-	JWT_SECRET *jwtSecret
+	JwtSecret *jwtSecret `mapstructure:"jwt_secret"`
 
-	FRONTEND_URL string
+	FrontendUrl string `mapstructure:"frontend_url"`
 
-	MAIL_SERVICE_ADDR string
+	MailServiceAddr string `mapstructure:"mail_service_addr"`
 
-	GRPC_CLIENTS []*grpc_client.ConfigGrpc
+	GrpcClients []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
 }
 
 func NewEnv(env any) {
@@ -73,5 +73,5 @@ func NewEnv(env any) {
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.ToLower(env.NODE_ENV) == "production"
+	return strings.ToLower(env.NodeEnv) == "production"
 }

@@ -56,7 +56,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		)
 		var tmpl *proto_mail_template.GetMailTmplResponse
 		data := map[string]any{
-			"link": a.env.FRONTEND_URL + "/auth/verify/" + result.Token,
+			"link": a.env.FrontendUrl + "/auth/verify/" + result.Token,
 			"user": result.UserInfor,
 		}
 		sagaTx.AddStep(saga.NewSagaStep(

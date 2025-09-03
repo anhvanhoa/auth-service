@@ -25,24 +25,24 @@ func App() *Application {
 	logConfig := log.NewConfig()
 	log := log.InitLogGRPC(logConfig, zapcore.DebugLevel, env.IsProduction())
 	db := db.NewPostgresDB(db.ConfigDB{
-		URL:  env.URL_DB,
-		Mode: env.NODE_ENV,
+		URL:  env.UrlDb,
+		Mode: env.NodeEnv,
 	})
 	configRedis := cache.NewConfigCache(
-		env.DB_CACHE.Addr,
-		env.DB_CACHE.Password,
-		env.DB_CACHE.DB,
-		env.DB_CACHE.Network,
-		env.DB_CACHE.MaxIdle,
-		env.DB_CACHE.MaxActive,
-		env.DB_CACHE.IdleTimeout,
+		env.DbCache.Addr,
+		env.DbCache.Password,
+		env.DbCache.Db,
+		env.DbCache.Network,
+		env.DbCache.MaxIdle,
+		env.DbCache.MaxActive,
+		env.DbCache.IdleTimeout,
 	)
 	cache := cache.NewCache(configRedis)
 	cfgQueue := q.NewDefaultConfig(
-		env.QUEUE.Addr,
-		env.QUEUE.Network,
-		env.QUEUE.Password,
-		env.QUEUE.DB,
+		env.Queue.Addr,
+		env.Queue.Network,
+		env.Queue.Password,
+		env.Queue.Db,
 		time.Minute*2,
 		nil,
 		5,

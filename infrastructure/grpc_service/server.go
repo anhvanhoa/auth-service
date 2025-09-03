@@ -12,8 +12,8 @@ import (
 func NewGRPCServer(env *bootstrap.Env, authService proto_auth.AuthServiceServer, log *log.LogGRPCImpl) *grpc_server.GRPCServer {
 	config := &grpc_server.GRPCServerConfig{
 		IsProduction: env.IsProduction(),
-		PortGRPC:     env.PORT_GRPC,
-		NameService:  env.NAME_SERVICE,
+		PortGRPC:     env.PortGrpc,
+		NameService:  env.NameService,
 	}
 	return grpc_server.NewGRPCServer(
 		config,
