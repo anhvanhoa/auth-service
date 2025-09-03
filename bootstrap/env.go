@@ -8,32 +8,32 @@ import (
 )
 
 type jwtSecret struct {
-	Access  string
-	Refresh string
-	Verify  string
-	Forgot  string
+	Access  string `mapstructure:"access"`
+	Refresh string `mapstructure:"refresh"`
+	Verify  string `mapstructure:"verify"`
+	Forgot  string `mapstructure:"forgot"`
 }
 
 type dbCache struct {
-	Addr        string
-	Db          int
-	Password    string
-	MaxIdle     int
-	MaxActive   int
-	IdleTimeout int
-	Network     string
+	Addr        string `mapstructure:"addr"`
+	Db          int    `mapstructure:"db"`
+	Password    string `mapstructure:"password"`
+	MaxIdle     int    `mapstructure:"max_idle"`
+	MaxActive   int    `mapstructure:"max_active"`
+	IdleTimeout int    `mapstructure:"idle_timeout"`
+	Network     string `mapstructure:"network"`
 }
 
 type queue struct {
-	Addr        string
-	Db          int
-	Password    string
-	MaxIdle     int
-	MaxActive   int
-	IdleTimeout int
-	Network     string
-	Concurrency int
-	Queues      map[string]int
+	Addr        string         `mapstructure:"addr"`
+	Db          int            `mapstructure:"db"`
+	Password    string         `mapstructure:"password"`
+	MaxIdle     int            `mapstructure:"max_idle"`
+	MaxActive   int            `mapstructure:"max_active"`
+	IdleTimeout int            `mapstructure:"idle_timeout"`
+	Network     string         `mapstructure:"network"`
+	Concurrency int            `mapstructure:"concurrency"`
+	Queues      map[string]int `mapstructure:"queues"`
 }
 
 type Env struct {
