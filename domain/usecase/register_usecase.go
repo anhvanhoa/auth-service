@@ -173,7 +173,7 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 }
 
 func (uc *registerUsecaseImpl) SendMail(payload queue.PayloadI) (string, error) {
-	return uc.qc.EnqueueAnyTask(string(constants.QUEUE_MAIL), payload)
+	return uc.qc.EnqueueAnyTask(queue.NameMail, payload)
 }
 
 func (uc *registerUsecaseImpl) RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error {
@@ -186,13 +186,13 @@ func (uc *registerUsecaseImpl) RegisterWithSaga(sagaID string, execute common.Ex
 }
 
 func (uc *registerUsecaseImpl) CompensateRegister(ctx context.Context, userID string, token string) error {
-	if err := uc.userRepo.DeleteByID(ctx, userID); err != nil {
+	if err := uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, userID); err != nil {
 		return err
 	}
-	go uc.sessionRepo.DeleteSessionVerifyByUserID(ctx, userID)
-	return uc.cache.Delete(token)
+	go uc.cache.Delete(token)
+	return uc.userRepo.DeleteByID(ctx, userID)
 }
 
 func (uc *registerUsecaseImpl) CompensateSendMail(ctx context.Context, taskID string) error {
-	return uc.qc.CancelTask(queue.TypeMail, taskID)
+	return uc.qc.CancelTask(queue.NameMail, taskID)
 }

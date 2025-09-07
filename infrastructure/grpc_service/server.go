@@ -3,7 +3,7 @@ package grpcservice
 import (
 	"auth-service/bootstrap"
 
-	grpc_server "github.com/anhvanhoa/service-core/boostrap/grpc"
+	grpc_server "github.com/anhvanhoa/service-core/bootstrap/grpc"
 	"github.com/anhvanhoa/service-core/domain/log"
 	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
 	"google.golang.org/grpc"

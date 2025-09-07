@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"time"
 
-	"github.com/anhvanhoa/service-core/boostrap/db"
+	"github.com/anhvanhoa/service-core/bootstrap/db"
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
 	q "github.com/anhvanhoa/service-core/domain/queue"

@@ -1,11 +1,11 @@
 CREATE TABLE
     sessions (
-        token VARCHAR(255),
+        token text,
         user_id UUID NOT NULL,
         type VARCHAR(255),
         os VARCHAR(255),
         expired_at TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
         PRIMARY KEY (token, user_id)
     );

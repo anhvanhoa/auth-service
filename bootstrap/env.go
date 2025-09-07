@@ -3,7 +3,7 @@ package bootstrap
 import (
 	"strings"
 
-	"github.com/anhvanhoa/service-core/boostrap/config"
+	"github.com/anhvanhoa/service-core/bootstrap/config"
 	"github.com/anhvanhoa/service-core/domain/grpc_client"
 )
 
