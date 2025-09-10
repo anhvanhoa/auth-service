@@ -5,7 +5,6 @@ import (
 	"auth-service/domain/usecase"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
@@ -91,7 +90,6 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		sagaTx.AddStep(saga.NewSagaStep(
 			"CreateMailHistory",
 			func(ctx context.Context) error {
-				return errors.New("test")
 				protoData, err := json.Marshal(&data)
 				if err != nil {
 					return err
