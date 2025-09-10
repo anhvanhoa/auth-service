@@ -1,8 +1,6 @@
 package bootstrap
 
 import (
-	"time"
-
 	"github.com/anhvanhoa/service-core/bootstrap/db"
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
@@ -43,7 +41,6 @@ func App() *Application {
 		env.Queue.Network,
 		env.Queue.Password,
 		env.Queue.Db,
-		time.Minute*2,
 		nil,
 		5,
 	)

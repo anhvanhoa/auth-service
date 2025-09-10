@@ -29,6 +29,12 @@ github.com/anhvanhoa/service-core v0.0.0-20250907210727-c68420cb6806 h1:YuWNErrn
 github.com/anhvanhoa/service-core v0.0.0-20250907210727-c68420cb6806/go.mod h1:ciFblCCLxZkKTDeoMnuxRLsRdIVu1pOt4mjmLZZIPOg=
 github.com/anhvanhoa/service-core v0.0.0-20250907211159-11ae076e5854 h1:1WMY7XIOrI9TYAbodxw5V13fGEu0FHHuQ91qwJrLT8k=
 github.com/anhvanhoa/service-core v0.0.0-20250907211159-11ae076e5854/go.mod h1:ciFblCCLxZkKTDeoMnuxRLsRdIVu1pOt4mjmLZZIPOg=
+github.com/anhvanhoa/service-core v0.0.0-20250910095658-3124aaf57dd3 h1:6xKBZssEWTZc417Fqq5mt/5jLPTY+/qckY8kXmm7reI=
+github.com/anhvanhoa/service-core v0.0.0-20250910095658-3124aaf57dd3/go.mod h1:ciFblCCLxZkKTDeoMnuxRLsRdIVu1pOt4mjmLZZIPOg=
+github.com/anhvanhoa/service-core v0.0.0-20250910100227-dfea51fafb5f h1:KGAG2JF7kD1RdKfhX3xwqzqZW09kuJu6m4JxCJ1fLjg=
+github.com/anhvanhoa/service-core v0.0.0-20250910100227-dfea51fafb5f/go.mod h1:ciFblCCLxZkKTDeoMnuxRLsRdIVu1pOt4mjmLZZIPOg=
+github.com/anhvanhoa/service-core v0.0.0-20250910164626-9aaf4e3f1a03 h1:xwIvgXhbneDRLA1KDWA5cyHbzMJPP2CoU4VF6YKJa7A=
+github.com/anhvanhoa/service-core v0.0.0-20250910164626-9aaf4e3f1a03/go.mod h1:ciFblCCLxZkKTDeoMnuxRLsRdIVu1pOt4mjmLZZIPOg=
 github.com/anhvanhoa/sf-proto v1.1.5 h1:e5AvlDwh0MdPStPpJf8za/4xcEj3PQjhBgP/tFyDexU=
 github.com/anhvanhoa/sf-proto v1.1.5/go.mod h1:CQ7MbEu4NIiPPbidqNJuvHegDs3kq1L8klTBnZxma3w=
 github.com/anhvanhoa/sf-proto v1.1.6-0.20250907192527-52435e929323 h1:lNOGVNJF5nBPKaCfzqJr4JzQqm0vf/1T/0NB8bqjPpU=

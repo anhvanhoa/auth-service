@@ -173,7 +173,7 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 }
 
 func (uc *registerUsecaseImpl) SendMail(payload queue.PayloadI) (string, error) {
-	return uc.qc.EnqueueAnyTask(queue.NameMail, payload)
+	return uc.qc.EnqueueAnyTask(payload)
 }
 
 func (uc *registerUsecaseImpl) RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error {
@@ -194,5 +194,5 @@ func (uc *registerUsecaseImpl) CompensateRegister(ctx context.Context, userID st
 }
 
 func (uc *registerUsecaseImpl) CompensateSendMail(ctx context.Context, taskID string) error {
-	return uc.qc.CancelTask(queue.NameMail, taskID)
+	return uc.qc.CancelTask(taskID)
 }

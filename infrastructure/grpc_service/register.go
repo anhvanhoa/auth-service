@@ -5,6 +5,7 @@ import (
 	"auth-service/domain/usecase"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -42,15 +43,16 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			Code:            code,
 		}
 		var err error
-		data := map[string]any{
-			"link": a.env.FrontendUrl + "/auth/verify/" + result.Token,
-		}
+		var data map[string]any
 		sagaTx.AddStep(
 			saga.NewSagaStep(
 				"Register",
 				func(ctx context.Context) error {
 					result, err = a.registerUc.Register(registerReq, os, exp)
-					data["user"] = result.UserInfor
+					data = map[string]any{
+						"user": result.UserInfor,
+						"link": a.env.FrontendUrl + "/auth/verify/" + result.Token,
+					}
 					return err
 				},
 				func(ctx context.Context) error {
@@ -89,6 +91,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		sagaTx.AddStep(saga.NewSagaStep(
 			"CreateMailHistory",
 			func(ctx context.Context) error {
+				return errors.New("test")
 				protoData, err := json.Marshal(&data)
 				if err != nil {
 					return err
