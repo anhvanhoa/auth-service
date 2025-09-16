@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"context"
 	"errors"
@@ -38,7 +37,7 @@ func NewLogoutUsecase(
 }
 
 func (l *logoutUsecaseImpl) VerifyToken(token string) error {
-	_, err := l.sessionRepo.GetSessionAliveByToken(entity.SessionTypeAuth, token)
+	_, err := l.cache.Get(token)
 	if err != nil {
 		return ErrNotFoundSession
 	}

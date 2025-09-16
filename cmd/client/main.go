@@ -164,11 +164,16 @@ func (c *GRPCClient) TestRefreshToken() {
 	refreshToken, _ := reader.ReadString('\n')
 	refreshToken = cleanInput(refreshToken)
 
+	fmt.Print("Enter OS: ")
+	osName, _ := reader.ReadString('\n')
+	osName = cleanInput(osName)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.authClient.RefreshToken(ctx, &proto_auth.RefreshTokenRequest{
 		RefreshToken: refreshToken,
+		Os:           osName,
 	})
 	if err != nil {
 		fmt.Printf("Error calling RefreshToken: %v\n", err)
@@ -230,6 +235,7 @@ func (c *GRPCClient) TestForgotPassword() {
 	resp, err := c.authClient.ForgotPassword(ctx, &proto_auth.ForgotPasswordRequest{
 		Email:  email,
 		Method: method,
+		Os:     "os-test",
 	})
 	if err != nil {
 		fmt.Printf("Error calling ForgotPassword: %v\n", err)
@@ -241,6 +247,7 @@ func (c *GRPCClient) TestForgotPassword() {
 	fmt.Printf("User ID: %s\n", resp.User.Id)
 	fmt.Printf("User Email: %s\n", resp.User.Email)
 	fmt.Printf("Token: %s\n", resp.Token)
+	fmt.Printf("Code: %s\n", resp.Code)
 }
 
 func (c *GRPCClient) TestResetPasswordByToken() {

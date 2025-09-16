@@ -32,7 +32,7 @@ type RegisterReq struct {
 }
 
 type RegisterUsecase interface {
-	CheckUserExist(email string) (entity.User, error)
+	CheckUserExist(email string) (bool, error)
 	hashPassword(password string) (string, error)
 	Register(user RegisterReq, os string, exp time.Time) (ResRegister, error)
 	RegisterWithSaga(sagaID string, execute common.ExecuteSaga) error
@@ -80,8 +80,8 @@ func NewRegisterUsecase(
 	}
 }
 
-func (uc *registerUsecaseImpl) CheckUserExist(email string) (entity.User, error) {
-	return uc.userRepo.GetUserByEmail(email)
+func (uc *registerUsecaseImpl) CheckUserExist(email string) (bool, error) {
+	return uc.userRepo.CheckUserVerified(email)
 }
 
 func (uc *registerUsecaseImpl) GengerateCode(length int8) string {
@@ -162,7 +162,7 @@ func (uc *registerUsecaseImpl) saveToken(token string, userId string, os string)
 		CreatedAt: time.Now(),
 		ExpiredAt: time.Now().Add(constants.VerifyExpiredAt * time.Second),
 	}
-	if err := uc.cache.Set(token, []byte(token), constants.VerifyExpiredAt*time.Second); err != nil {
+	if err := uc.cache.Set(token, []byte(constants.TPL_VERIFY_MAIL), constants.VerifyExpiredAt*time.Second); err != nil {
 		if err := uc.sessionRepo.CreateSession(session); err != nil {
 			return err
 		}

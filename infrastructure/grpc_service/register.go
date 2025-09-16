@@ -24,7 +24,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	existingUser, err := a.registerUc.CheckUserExist(req.GetEmail())
-	if err == nil && existingUser.ID != "" {
+	if err == nil && existingUser {
 		return nil, status.Error(codes.AlreadyExists, "Email đã được sử dụng")
 	}
 

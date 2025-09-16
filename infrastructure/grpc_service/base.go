@@ -103,6 +103,9 @@ func NewAuthService(
 			tx,
 			tokenForgot,
 			cache,
+			queueClient,
+			saga,
+			log,
 		),
 		resetCodeUc: usecase.NewResetPasswordCodeUsecase(
 			userRepo,

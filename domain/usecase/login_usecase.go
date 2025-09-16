@@ -3,11 +3,16 @@ package usecase
 import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
+	"errors"
 	"time"
 
 	"github.com/anhvanhoa/service-core/domain/cache"
 	hashpass "github.com/anhvanhoa/service-core/domain/hash_pass"
 	"github.com/anhvanhoa/service-core/domain/token"
+)
+
+var (
+	ErrUserNotVerified = errors.New("người dùng chưa xác thực")
 )
 
 type LoginUsecase interface {
@@ -45,7 +50,17 @@ func NewLoginUsecase(
 }
 
 func (uc *loginUsecaseImpl) GetUserByEmailOrPhone(val string) (entity.User, error) {
-	return uc.userRepo.GetUserByEmailOrPhone(val)
+	var user entity.User
+	user, err := uc.userRepo.GetUserByEmailOrPhone(val)
+	if err != nil {
+		return user, ErrUserNotFound
+	}
+
+	if user.Veryfied == nil {
+		return user, ErrUserNotVerified
+	}
+
+	return user, nil
 }
 
 func (uc *loginUsecaseImpl) CheckHashPassword(password, hash string) bool {

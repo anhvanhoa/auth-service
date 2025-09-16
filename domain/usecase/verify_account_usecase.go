@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"auth-service/constants"
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"context"
@@ -43,7 +44,7 @@ func NewVerifyAccountUsecase(
 }
 
 func (u *verifyAccountUsecaseImpl) VerifyRegister(t string) (*token.AuthClaims, error) {
-	if _, err := u.cache.Get(t); err != nil {
+	if v, err := u.cache.Get(t); err != nil || string(v) != constants.TPL_VERIFY_MAIL {
 		if isExist := u.sessionRepo.TokenExists(t); !isExist {
 			return nil, ErrTokenNotFound
 		}
