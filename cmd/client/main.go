@@ -23,19 +23,19 @@ type GRPCClient struct {
 	conn       *grpc.ClientConn
 }
 
-func NewAuthGRPCClient(address string) (*AuthGRPCClient, error) {
+func NewGRPCClient(address string) (*GRPCClient, error) {
 	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to gRPC server: %v", err)
 	}
 
-	return &AuthGRPCClient{
+	return &GRPCClient{
 		authClient: proto_auth.NewAuthServiceClient(conn),
 		conn:       conn,
 	}, nil
 }
 
-func (c *AuthGRPCClient) Close() {
+func (c *GRPCClient) Close() {
 	if c.conn != nil {
 		c.conn.Close()
 	}
