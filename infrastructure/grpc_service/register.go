@@ -4,6 +4,7 @@ import (
 	"auth-service/constants"
 	"auth-service/domain/usecase"
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -15,7 +16,6 @@ import (
 	proto_status_history "github.com/anhvanhoa/sf-proto/gen/status_history/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -24,7 +24,7 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 	existingUser, err := a.registerUc.CheckUserExist(req.GetEmail())
-	if err == nil && existingUser.ID != "" {
+	if err == nil && existingUser {
 		return nil, status.Error(codes.AlreadyExists, "Email đã được sử dụng")
 	}
 
@@ -42,11 +42,16 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			Code:            code,
 		}
 		var err error
+		var data map[string]any
 		sagaTx.AddStep(
 			saga.NewSagaStep(
 				"Register",
 				func(ctx context.Context) error {
 					result, err = a.registerUc.Register(registerReq, os, exp)
+					data = map[string]any{
+						"user": result.UserInfor,
+						"link": a.env.FrontendUrl + "/auth/verify/" + result.Token,
+					}
 					return err
 				},
 				func(ctx context.Context) error {
@@ -55,10 +60,6 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			),
 		)
 		var tmpl *proto_mail_template.GetMailTmplResponse
-		data := map[string]any{
-			"link": a.env.FrontendUrl + "/auth/verify/" + result.Token,
-			"user": result.UserInfor,
-		}
 		sagaTx.AddStep(saga.NewSagaStep(
 			"GetMailTemplate",
 			func(ctx context.Context) error {
@@ -75,8 +76,8 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		sagaTx.AddStep(saga.NewSagaStep(
 			"SendMail",
 			func(ctx context.Context) error {
-				payload := queue.NewPayload(data, []string{result.UserInfor.Email}, tmpl.MailTmpl.Id)
-				if taskId, err = a.registerUc.SendMail(&payload); err != nil {
+				payload := queue.NewPayloadMail(data, []string{result.UserInfor.Email}, tmpl.MailTmpl.Id)
+				if taskId, err = a.registerUc.SendMail(payload); err != nil {
 					return err
 				}
 				return nil
@@ -86,23 +87,20 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 			},
 		))
 
-		protoData := make(map[string]*anypb.Any)
-		for k := range data {
-			if anyValue, err := anypb.New(timestamppb.New(time.Now())); err == nil {
-				protoData[k] = anyValue
-			}
-		}
-
 		sagaTx.AddStep(saga.NewSagaStep(
 			"CreateMailHistory",
 			func(ctx context.Context) error {
+				protoData, err := json.Marshal(&data)
+				if err != nil {
+					return err
+				}
 				if _, err := a.mailService.Mhc.CreateMailHistory(ctx, &proto_mail_history.CreateMailHistoryRequest{
 					Id:            taskId,
 					TemplateId:    constants.TPL_REGISTER_MAIL,
 					Subject:       tmpl.MailTmpl.Subject,
 					Body:          tmpl.MailTmpl.Body,
 					Tos:           []string{result.UserInfor.Email},
-					Data:          protoData,
+					Data:          string(protoData),
 					EmailProvider: tmpl.MailTmpl.ProviderEmail,
 				}); err != nil {
 					return err

@@ -6,11 +6,16 @@ import (
 	"auth-service/domain/repository"
 	"context"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
 
+	"github.com/anhvanhoa/service-core/common"
 	"github.com/anhvanhoa/service-core/domain/cache"
+	"github.com/anhvanhoa/service-core/domain/log"
+	"github.com/anhvanhoa/service-core/domain/queue"
+	"github.com/anhvanhoa/service-core/domain/saga"
 	"github.com/anhvanhoa/service-core/domain/token"
 )
 
@@ -24,6 +29,7 @@ const (
 var (
 	ErrValidateForgotPassword = errors.New("phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
 	ErrCreateSession          = errors.New("không thể tạo phiên làm việc")
+	ErrInvalidCompensateType  = errors.New("loại bù không hợp lệ")
 )
 
 type ForgotPasswordRes struct {
@@ -32,11 +38,21 @@ type ForgotPasswordRes struct {
 	Code  string
 }
 
+type CompensateForgotPassword struct {
+	UserID string
+	Token  string
+	Code   string
+	Type   ForgotPasswordType
+}
+
 type ForgotPasswordUsecase interface {
 	ForgotPassword(email, os string, method ForgotPasswordType) (ForgotPasswordRes, error)
 	saveCodeOrToken(typeForgot ForgotPasswordType, userID, codeOrToken, os string, exp time.Time) error
-	SendEmailForgotPassword(user entity.UserInfor, code, link string) error
+	SendEmailForgotPassword(payload queue.PayloadI) (string, error)
+	CompensateSendEmail(ctx context.Context, taskID string) error
 	generateRandomCode(length int) string
+	ForgotPasswordWithSaga(sagaID string, execute common.ExecuteSaga) error
+	CompensateForgotPassword(ctx context.Context, data CompensateForgotPassword) error
 }
 
 type forgotPasswordUsecaseImpl struct {
@@ -45,6 +61,9 @@ type forgotPasswordUsecaseImpl struct {
 	tx          repository.ManagerTransaction
 	token       token.TokenForgotPasswordI
 	cache       cache.CacheI
+	qc          queue.QueueClient
+	saga        saga.SagaManager
+	log         *log.LogGRPCImpl
 }
 
 func NewForgotPasswordUsecase(
@@ -53,6 +72,9 @@ func NewForgotPasswordUsecase(
 	tx repository.ManagerTransaction,
 	token token.TokenForgotPasswordI,
 	cache cache.CacheI,
+	qc queue.QueueClient,
+	saga saga.SagaManager,
+	log *log.LogGRPCImpl,
 ) ForgotPasswordUsecase {
 	return &forgotPasswordUsecaseImpl{
 		userRepo,
@@ -60,6 +82,9 @@ func NewForgotPasswordUsecase(
 		tx,
 		token,
 		cache,
+		qc,
+		saga,
+		log,
 	}
 }
 
@@ -74,7 +99,7 @@ func (uc *forgotPasswordUsecaseImpl) saveCodeOrToken(typeForgot ForgotPasswordTy
 	}
 	key := codeOrToken
 	if typeForgot == ForgotByCode && len(codeOrToken) == 6 {
-		key = codeOrToken + userID
+		key = fmt.Sprintf("%s:%s", codeOrToken, userID)
 	}
 	if err := uc.cache.Set(key, []byte(codeOrToken), constants.ForgotExpiredAt*time.Minute); err != nil {
 		if err := uc.sessionRepo.CreateSession(session); err != nil {
@@ -86,9 +111,9 @@ func (uc *forgotPasswordUsecaseImpl) saveCodeOrToken(typeForgot ForgotPasswordTy
 	return nil
 }
 
-func (uc *forgotPasswordUsecaseImpl) SendEmailForgotPassword(user entity.UserInfor, code, link string) error {
+func (uc *forgotPasswordUsecaseImpl) SendEmailForgotPassword(payload queue.PayloadI) (string, error) {
 	go uc.sessionRepo.DeleteAllSessionsForgot(context.Background())
-	return nil
+	return uc.qc.EnqueueAnyTask(payload)
 }
 
 func (uc *forgotPasswordUsecaseImpl) ForgotPassword(email, os string, method ForgotPasswordType) (ForgotPasswordRes, error) {
@@ -129,4 +154,51 @@ func (uc *forgotPasswordUsecaseImpl) generateRandomCode(length int) string {
 	max := min*10 - 1
 	num := r.Int63n(max-min+1) + min
 	return strconv.FormatInt(num, 10)
+}
+
+func (uc *forgotPasswordUsecaseImpl) ForgotPasswordWithSaga(sagaID string, execute common.ExecuteSaga) error {
+	ctx := context.Background()
+	sagaTx := uc.saga.NewTransaction(sagaID, ctx)
+	if err := execute(sagaTx.GetContext(), sagaTx); err != nil {
+		return err
+	}
+	return sagaTx.Execute(sagaTx.GetContext(), sagaID)
+}
+
+func (uc *forgotPasswordUsecaseImpl) CompensateSendEmail(ctx context.Context, taskID string) error {
+	return uc.qc.CancelTask(taskID)
+}
+
+func (uc *forgotPasswordUsecaseImpl) CompensateForgotPassword(ctx context.Context, data CompensateForgotPassword) error {
+	switch data.Type {
+	case ForgotByCode:
+		key := fmt.Sprintf("%s:%s", data.Code, data.UserID)
+		if err := uc.cache.Delete(key); err != nil {
+			if err := uc.sessionRepo.DeleteSessionForgotByTokenAndIdUser(ctx, data.Code, data.UserID); err != nil {
+				return err
+			}
+		}
+		go func() {
+			if err := uc.sessionRepo.DeleteSessionForgotByTokenAndIdUser(ctx, data.Code, data.UserID); err != nil {
+				uc.log.Error("async delete failed: " + err.Error())
+			}
+		}()
+		return nil
+
+	case ForgotByToken:
+		if err := uc.cache.Delete(data.Token); err != nil {
+			if err := uc.sessionRepo.DeleteSessionForgotByToken(ctx, data.Token); err != nil {
+				return err
+			}
+		}
+		go func() {
+			if err := uc.sessionRepo.DeleteSessionForgotByToken(ctx, data.Token); err != nil {
+				uc.log.Error("async delete failed: " + err.Error())
+			}
+		}()
+		return nil
+
+	default:
+		return ErrInvalidCompensateType
+	}
 }

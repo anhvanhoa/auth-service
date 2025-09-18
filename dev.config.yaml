@@ -1,0 +1,46 @@
+node_env: "development"
+url_db: "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable"
+
+name_service: "AuthService"
+port_grpc: 50050
+host_grpc: "localhost"
+interval_check: "20s"
+timeout_check: "15s"
+
+db_cache:
+  addr: "localhost:6379"
+  db: 1
+  password: ""
+  max_idle: 10
+  max_active: 100
+  idle_timeout: 240
+  network: "tcp"
+
+queue:
+  addr: "localhost:6379"
+  db: 0
+  password: ""
+  max_idle: 10
+  max_active: 100
+  idle_timeout: 240
+  network: "tcp"
+
+secret_otp: "your-secret-otp-key-here"
+
+jwt_secret:
+  access: "your-access-jwt-secret-here"
+  refresh: "your-refresh-jwt-secret-here"
+  verify: "your-verify-jwt-secret-here"
+  forgot: "your-forgot-jwt-secret-here"
+
+frontend_url: "http://localhost:3000"
+
+mail_service_addr: "localhost:50052"
+
+grpc_clients:
+  - Name: "MailService"
+    ServerAddress: "localhost:50052"
+    MaxRetries: 3
+    Time: 20
+    Timeout: 15
+    PermitWithoutStream: true 

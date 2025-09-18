@@ -14,12 +14,12 @@ import (
 func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (*proto_auth.LoginResponse, error) {
 	identifier := req.GetEmailOrPhone()
 	if !isValidEmail(identifier) && !isValidPhone(identifier) {
-		return nil, status.Errorf(codes.InvalidArgument, "email hoặc số điện thoại không đúng định dạng")
+		return nil, status.Errorf(codes.InvalidArgument, "Email hoặc số điện thoại không đúng định dạng")
 	}
 
 	user, err := a.loginUc.GetUserByEmailOrPhone(req.GetEmailOrPhone())
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "Không tìm thấy người dùng")
+		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if !a.loginUc.CheckHashPassword(req.GetPassword(), user.Password) {

@@ -89,6 +89,13 @@ func (ur *userRepository) GetUserByEmail(email string) (entity.User, error) {
 	return user, err
 }
 
+func (ur *userRepository) CheckUserVerified(email string) (bool, error) {
+	var user entity.User
+	count, err := ur.db.Model(&user).Where("email = ?", email).Where("veryfied IS NOT NULL").Count()
+	isVerified := count > 0
+	return isVerified, err
+}
+
 func (ur *userRepository) UpdateUserByEmail(email string, user entity.User) (bool, error) {
 	r, err := ur.db.Model(&user).Where("email = ?", email).Update(&user)
 	return r.RowsAffected() != -1, err

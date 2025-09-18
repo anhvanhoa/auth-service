@@ -11,6 +11,7 @@ type UserRepository interface {
 	GetUserByID(id string) (entity.User, error)
 	CheckUserExist(val string) (bool, error)
 	GetUserByEmail(email string) (entity.User, error)
+	CheckUserVerified(email string) (bool, error)
 	UpdateUser(Id string, data entity.User) (entity.UserInfor, error)
 	UpdateUserByEmail(email string, data entity.User) (bool, error)
 	DeleteByID(ctx context.Context, id string) error
