@@ -19,7 +19,7 @@ CREATE TABLE
         code_verify VARCHAR(255),
         veryfied TIMESTAMP DEFAULT NULL,
         address VARCHAR(255),
-        status user_status,
+        status user_status DEFAULT 'active',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
