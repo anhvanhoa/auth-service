@@ -20,6 +20,9 @@ import (
 )
 
 func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequest) (*proto_auth.RegisterResponse, error) {
+	if err := a.validateWhenRegister(); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
 	if err := validatePasswordMatch(req.GetPassword(), req.GetConfirmPassword()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -162,4 +165,17 @@ func (a *authService) Register(ctx context.Context, req *proto_auth.RegisterRequ
 		Token:   result.Token,
 		Message: "Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
 	}, nil
+}
+
+func (a *authService) validateWhenRegister() error {
+	if a.mailService == nil || a.mailService.Mtc == nil || a.mailService.Mhc == nil || a.mailService.Shc == nil {
+		return ErrMailServiceNotAvailable
+	}
+	if a.registerUc == nil {
+		return ErrRegisterUsecaseNotAvailable
+	}
+	if a.uuid == nil {
+		return ErrUuidGeneratorNotAvailable
+	}
+	return nil
 }

@@ -37,29 +37,22 @@ type queue struct {
 }
 
 type Env struct {
-	NodeEnv string `mapstructure:"node_env"`
-
-	UrlDb string `mapstructure:"url_db"`
-
-	NameService   string `mapstructure:"name_service"`
-	PortGrpc      int    `mapstructure:"port_grpc"`
-	HostGrpc      string `mapstructure:"host_grpc"`
-	IntervalCheck string `mapstructure:"interval_check"`
-	TimeoutCheck  string `mapstructure:"timeout_check"`
-
-	DbCache *dbCache `mapstructure:"db_cache"`
-
-	SecretOtp string `mapstructure:"secret_otp"`
-
-	Queue *queue `mapstructure:"queue"`
-
-	JwtSecret *jwtSecret `mapstructure:"jwt_secret"`
-
-	FrontendUrl string `mapstructure:"frontend_url"`
-
-	MailServiceAddr string `mapstructure:"mail_service_addr"`
-
-	GrpcClients []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
+	NodeEnv               string                    `mapstructure:"node_env"`
+	SecretService         string                    `mapstructure:"secret_service"`
+	UrlDb                 string                    `mapstructure:"url_db"`
+	NameService           string                    `mapstructure:"name_service"`
+	PortGrpc              int                       `mapstructure:"port_grpc"`
+	HostGrpc              string                    `mapstructure:"host_grpc"`
+	IntervalCheck         string                    `mapstructure:"interval_check"`
+	TimeoutCheck          string                    `mapstructure:"timeout_check"`
+	DbCache               *dbCache                  `mapstructure:"db_cache"`
+	SecretOtp             string                    `mapstructure:"secret_otp"`
+	Queue                 *queue                    `mapstructure:"queue"`
+	JwtSecret             *jwtSecret                `mapstructure:"jwt_secret"`
+	FrontendUrl           string                    `mapstructure:"frontend_url"`
+	MailServiceAddr       string                    `mapstructure:"mail_service_addr"`
+	PermissionServiceAddr string                    `mapstructure:"permission_service_addr"`
+	GrpcClients           []*grpc_client.ConfigGrpc `mapstructure:"grpc_clients"`
 }
 
 func NewEnv(env any) {

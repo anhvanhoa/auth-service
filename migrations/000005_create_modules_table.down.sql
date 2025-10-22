@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS modules;
-DROP TYPE IF EXISTS module_status;

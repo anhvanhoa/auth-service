@@ -5,16 +5,18 @@ import (
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
 	q "github.com/anhvanhoa/service-core/domain/queue"
+	"github.com/anhvanhoa/service-core/utils"
 	"github.com/go-pg/pg/v10"
 	"go.uber.org/zap/zapcore"
 )
 
 type Application struct {
-	Env   *Env
-	DB    *pg.DB
-	Log   *log.LogGRPCImpl
-	Cache cache.CacheI
-	Queue q.QueueClient
+	Env    *Env
+	DB     *pg.DB
+	Log    *log.LogGRPCImpl
+	Cache  cache.CacheI
+	Queue  q.QueueClient
+	Helper utils.Helper
 }
 
 func App() *Application {
@@ -45,11 +47,13 @@ func App() *Application {
 		5,
 	)
 	queue := q.NewQueueClient(cfgQueue)
+	helper := utils.NewHelper()
 	return &Application{
-		Env:   &env,
-		DB:    db,
-		Log:   log,
-		Cache: cache,
-		Queue: queue,
+		Env:    &env,
+		DB:     db,
+		Log:    log,
+		Cache:  cache,
+		Queue:  queue,
+		Helper: helper,
 	}
 }

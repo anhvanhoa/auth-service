@@ -1,38 +1,60 @@
-migrate-dev-up:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" up
+NAME_DB=auth_service_db
+PORT_DB=5432
+USER_DB=postgres
+PASSWORD_DB=123456
+HOST_DB=localhost
+SSL_MODE=disable
+DB_URL="postgres://${USER_DB}:${PASSWORD_DB}@${HOST_DB}:${PORT_DB}/${NAME_DB}?sslmode=${SSL_MODE}"
+NAME_CONTAINER=postgis-gis
+MIGRATIONS_DIR = ./migrations
 
-migrate-dev-down:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" down
+.PHONY: help up down version force create
 
-migrate-dev-reset:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" reset
+help: ## Show this help message
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-migrate-dev-drop:
-	migrate -path ./migrations -database "postgres://postgres:123456@localhost:5432/user_service_db?sslmode=disable" drop
+up: ## Run all pending migrations
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} up
 
-migrate-dev-create:
-	migrate create -ext sql -dir ./migrations -seq $(name)
+down: ## Rollback the last migration
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} down
 
-dev-docker-drop-db:
-	docker exec -it postgres_container dropdb --force -U postgres user_service_db
+force: ## Force the last migration
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} force $(v)
 
-dev-docker-create-db:
-	docker exec -it postgres_container createdb -U postgres user_service_db
+reset: ## Reset database completely
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} reset
 
-dev-drop-db:
-	dropdb --force -U postgres user_service_db
+drop: ## Drop database
+	migrate -path ${MIGRATIONS_DIR} -database ${DB_URL} drop
 
-dev-create-db:
-	createdb -U postgres user_service_db
+create:
+	migrate create -ext sql -dir ${MIGRATIONS_DIR} -seq $(name)
 
-build-grpc:
-	go build -o bin/grpc-server cmd/gRPC.go
+docker-drop-db: ## Drop database in the container
+	docker exec -it ${NAME_CONTAINER} dropdb --force -U ${USER_DB} ${NAME_DB}
 
-run-grpc:
-	go run cmd/gRPC.go
+docker-create-db: ## Create database in the container
+	docker exec -it ${NAME_CONTAINER} createdb -U ${USER_DB} ${NAME_DB}
 
-run:
+create-db: ## Create database
+	createdb -U ${USER_DB} ${NAME_DB}
+
+drop-db: ## Drop database
+	dropdb -U ${USER_DB} ${NAME_DB}
+
+build: ## Build the application
+	go build -o ./bin/app cmd/main.go
+
+run: ## Run the application
 	go run cmd/main.go
 
-client:
+start:
+	./bin/app
+
+client: ## Run the client application
 	go run cmd/client/main.go
+
+seed: ## Run all pending migrations
+	go run script/seed/main.go ${type}

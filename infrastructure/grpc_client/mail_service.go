@@ -16,6 +16,9 @@ type MailService struct {
 }
 
 func NewMailService(client *grpc_client.Client) *MailService {
+	if client == nil {
+		return &MailService{}
+	}
 	return &MailService{
 		Shc: proto_status_history.NewStatusHistoryServiceClient(client.GetConnection()),
 		Mtc: proto_mail_template.NewMailTmplServiceClient(client.GetConnection()),
