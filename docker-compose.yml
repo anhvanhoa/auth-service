@@ -8,7 +8,7 @@ services:
     image: auth-service:latest
     container_name: auth_service_app
     ports:
-      - "50064:50064"
+      - "40064:40064"
     networks:
       - sf_network
     environment:
@@ -25,7 +25,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:50064/health",
+          "http://localhost:40064/health",
         ]
       interval: 30s
       timeout: 10s

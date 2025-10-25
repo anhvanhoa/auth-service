@@ -2,7 +2,7 @@ node_env: 'development'
 secret_service: 'AuthServiceSecret'
 url_db: 'postgres://postgres:123456@localhost:5432/auth_service_db?sslmode=disable'
 name_service: 'AuthService'
-port_grpc: 50050
+port_grpc: 40064
 host_grpc: 'localhost'
 interval_check: '20s'
 timeout_check: '15s'
