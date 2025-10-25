@@ -58,3 +58,6 @@ client: ## Run the client application
 
 seed: ## Run all pending migrations
 	go run script/seed/main.go ${type}
+
+docker-build: ## Build the application and run it in the container
+	export NODE_ENV=${NODE_ENV} CONFIG_FILE=${CONFIG_FILE} && docker compose up -d --build
