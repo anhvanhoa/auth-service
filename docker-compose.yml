@@ -6,7 +6,7 @@ services:
       secrets:
         - github_token
     image: auth-service:latest
-    container_name: auth-service_app
+    container_name: auth_service_app
     ports:
       - "50064:50064"
     networks:
