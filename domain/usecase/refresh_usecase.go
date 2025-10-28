@@ -11,7 +11,7 @@ import (
 )
 
 type RefreshUsecase interface {
-	GetSessionByToken(token string) (entity.Session, error)
+	CheckSessionByToken(token string) bool
 	ClearSessionExpired() error
 	VerifyToken(token string) (*token.AuthorizeClaims, error)
 	GengerateAccessToken(id, fullName, email string, exp time.Time) (string, error)
@@ -39,15 +39,18 @@ func NewRefreshUsecase(
 	}
 }
 
-func (uc *refreshUsecaseImpl) GetSessionByToken(token string) (entity.Session, error) {
-	session, err := uc.sessionRepo.GetSessionAliveByToken(entity.SessionTypeAuth, token)
-	if err != nil {
-		return entity.Session{}, err
+func (uc *refreshUsecaseImpl) CheckSessionByToken(token string) bool {
+	if _, err := uc.cache.Get(token); err != nil {
+		if _, err := uc.sessionRepo.GetSessionAliveByToken(entity.SessionTypeAuth, token); err != nil {
+			return false
+		}
+		go func() {
+			if err := uc.sessionRepo.DeleteSessionAuthByToken(context.Background(), token); err != nil {
+				return
+			}
+		}()
 	}
-	if err := uc.sessionRepo.DeleteSessionAuthByToken(context.Background(), token); err != nil {
-		return entity.Session{}, err
-	}
-	return session, nil
+	return true
 }
 
 func (uc *refreshUsecaseImpl) ClearSessionExpired() error {

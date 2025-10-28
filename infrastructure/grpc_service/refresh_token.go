@@ -12,7 +12,7 @@ import (
 )
 
 func (a *authService) RefreshToken(ctx context.Context, req *proto_auth.RefreshTokenRequest) (*proto_auth.RefreshTokenResponse, error) {
-	if _, err := a.refreshUc.GetSessionByToken(req.GetRefreshToken()); err != nil {
+	if !a.refreshUc.CheckSessionByToken(req.GetRefreshToken()) {
 		return nil, status.Error(codes.InvalidArgument, "Phiên làm việc không hợp lệ")
 	}
 
