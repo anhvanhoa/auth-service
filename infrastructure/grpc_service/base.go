@@ -24,6 +24,8 @@ type authService struct {
 	env              *bootstrap.Env
 	log              *log.LogGRPCImpl
 	uuid             goid.GoUUID
+	cache            cache.CacheI
+	permissionClient grpc_client.PermissionClient
 	mailService      *grpc_client.MailService
 	checkTokenUc     usecase.CheckTokenUsecase
 	loginUc          usecase.LoginUsecase
@@ -42,6 +44,7 @@ func NewAuthService(
 	env *bootstrap.Env,
 	log *log.LogGRPCImpl,
 	mailService *grpc_client.MailService,
+	permissionClient grpc_client.PermissionClient,
 	queueClient queue.QueueClient,
 	cache cache.CacheI,
 ) proto_auth.AuthServiceServer {
@@ -56,11 +59,13 @@ func NewAuthService(
 	tokenAuth := token.NewToken(env.JwtSecret.Verify)
 	tokenForgot := token.NewToken(env.JwtSecret.Forgot)
 	return &authService{
-		env:          env,
-		log:          log,
-		mailService:  mailService,
-		uuid:         genUUID,
-		checkTokenUc: usecase.NewCheckTokenUsecase(sessionRepo),
+		env:              env,
+		log:              log,
+		mailService:      mailService,
+		permissionClient: permissionClient,
+		uuid:             genUUID,
+		checkTokenUc:     usecase.NewCheckTokenUsecase(sessionRepo),
+		cache:            cache,
 		loginUc: usecase.NewLoginUsecase(
 			userRepo,
 			sessionRepo,

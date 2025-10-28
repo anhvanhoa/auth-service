@@ -35,19 +35,19 @@ jwt_secret:
 
 frontend_url: 'http://localhost:3000'
 
-mail_service_addr: 'localhost:50052'
-permission_service_addr: 'localhost:50051'
+mail_service_addr: 'localhost:40052'
+permission_service_addr: 'localhost:40051'
 
 grpc_clients:
     - Name: 'MailService'
-      ServerAddress: 'localhost:50052'
+      ServerAddress: 'localhost:40052'
       MaxRetries: 3
       Time: 20
       Timeout: 15
       PermitWithoutStream: true
       SecretInternal: 'MailServiceSecret'
     - Name: 'PermissionService'
-      ServerAddress: 'localhost:50051'
+      ServerAddress: 'localhost:40051'
       MaxRetries: 3
       Time: 20
       Timeout: 15

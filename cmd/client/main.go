@@ -10,13 +10,18 @@ import (
 	"time"
 
 	proto_auth "github.com/anhvanhoa/sf-proto/gen/auth/v1"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-const (
-	serverAddress = "localhost:50050" // Default gRPC server address
-)
+var serverAddress string
+
+func init() {
+	viper.SetConfigFile("dev.config.yaml")
+	viper.ReadInConfig()
+	serverAddress = fmt.Sprintf("%s:%s", viper.GetString("host_grpc"), viper.GetString("port_grpc"))
+}
 
 type GRPCClient struct {
 	authClient proto_auth.AuthServiceClient

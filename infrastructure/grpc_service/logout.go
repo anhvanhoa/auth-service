@@ -9,12 +9,17 @@ import (
 )
 
 func (a *authService) Logout(ctx context.Context, req *proto_auth.LogoutRequest) (*proto_auth.LogoutResponse, error) {
-	if err := a.logoutUc.VerifyToken(req.GetToken()); err != nil {
+	id, err := a.logoutUc.VerifyToken(req.GetToken())
+	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "Token không hợp lệ")
 	}
 
 	if err := a.logoutUc.Logout(req.GetToken()); err != nil {
 		return nil, status.Error(codes.Internal, "Không thể đăng xuất")
+	}
+
+	if err := a.cache.Delete(id); err != nil {
+		return nil, status.Errorf(codes.Internal, "Không thể xóa quyền")
 	}
 
 	return &proto_auth.LogoutResponse{

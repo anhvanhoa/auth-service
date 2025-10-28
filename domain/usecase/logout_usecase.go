@@ -14,7 +14,7 @@ var (
 )
 
 type LogoutUsecase interface {
-	VerifyToken(token string) error
+	VerifyToken(token string) (string, error)
 	Logout(token string) error
 }
 
@@ -36,16 +36,16 @@ func NewLogoutUsecase(
 	}
 }
 
-func (l *logoutUsecaseImpl) VerifyToken(token string) error {
+func (l *logoutUsecaseImpl) VerifyToken(token string) (string, error) {
 	_, err := l.cache.Get(token)
 	if err != nil {
-		return ErrNotFoundSession
+		return "", ErrNotFoundSession
 	}
-	_, err = l.token.VerifyAuthorizeToken(token)
+	claims, err := l.token.VerifyAuthorizeToken(token)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	return claims.Data.Id, nil
 }
 
 func (l *logoutUsecaseImpl) Logout(token string) error {

@@ -19,15 +19,18 @@ func main() {
 
 	clientFactory := gc.NewClientFactory(env.GrpcClients...)
 	mailService := grpc_client.NewMailService(clientFactory.GetClient(env.MailServiceAddr))
-	permissionClient := grpc_client.NewPermissionClient(clientFactory.GetClient(env.PermissionServiceAddr))
+	permissionClient, err := grpc_client.NewPermissionClient(clientFactory.GetClient(env.PermissionServiceAddr))
+	if err != nil {
+		log.Error("Failed to create permission client: " + err.Error())
+	}
 
-	authService := grpcservice.NewAuthService(db, env, log, mailService, queueClient, cache)
+	authService := grpcservice.NewAuthService(db, env, log, mailService, permissionClient, queueClient, cache)
 	grpcSrv := grpcservice.NewGRPCServer(env, cache, log, authService)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	permissions := app.Helper.ConvertResourcesToPermissions(grpcSrv.GetResources())
-	if _, err := permissionClient.PermissionServiceClient.RegisterPermission(ctx, permissions); err != nil {
-		log.Fatal("Failed to register permission: " + err.Error())
+	if _, err := permissionClient.PermissionService().RegisterPermission(ctx, permissions); err != nil {
+		log.Error("Failed to register permission: " + err.Error())
 	}
 	if err := grpcSrv.Start(ctx); err != nil {
 		log.Fatal("gRPC server error: " + err.Error())
