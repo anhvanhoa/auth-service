@@ -48,7 +48,7 @@ func (a *authService) RefreshToken(ctx context.Context, req *proto_auth.RefreshT
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể chuyển đổi quyền")
 	}
-	if err := a.cache.Set(claims.Data.Id, bytes, time.Until(accessExp)); err != nil {
+	if err := a.cache.Set(accessToken, bytes, time.Until(accessExp)); err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể lưu quyền")
 	}
 

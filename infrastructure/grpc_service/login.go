@@ -53,7 +53,7 @@ func (a *authService) Login(ctx context.Context, req *proto_auth.LoginRequest) (
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể chuyển đổi quyền")
 	}
-	if err := a.cache.Set(user.ID, bytes, time.Until(exp)); err != nil {
+	if err := a.cache.Set(accessToken, bytes, time.Until(exp)); err != nil {
 		return nil, status.Errorf(codes.Internal, "Không thể lưu quyền")
 	}
 

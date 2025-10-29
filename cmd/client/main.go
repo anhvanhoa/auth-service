@@ -196,14 +196,19 @@ func (c *GRPCClient) TestLogout() {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Enter access token: ")
-	token, _ := reader.ReadString('\n')
-	token = cleanInput(token)
+	accessToken, _ := reader.ReadString('\n')
+	accessToken = cleanInput(accessToken)
+
+	fmt.Print("Enter refresh token: ")
+	refreshToken, _ := reader.ReadString('\n')
+	refreshToken = cleanInput(refreshToken)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	resp, err := c.authClient.Logout(ctx, &proto_auth.LogoutRequest{
-		Token: token,
+		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
 	})
 	if err != nil {
 		fmt.Printf("Error calling Logout: %v\n", err)
