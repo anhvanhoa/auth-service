@@ -37,6 +37,7 @@ type authService struct {
 	resetCodeUc      usecase.ResetPasswordByCodeUsecase
 	resetTokenUc     usecase.ResetPasswordByTokenUsecase
 	checkCodeUc      usecase.CheckCodeUsecase
+	profileUc        usecase.ProfileUsecase
 }
 
 func NewAuthService(
@@ -129,6 +130,10 @@ func NewAuthService(
 		checkCodeUc: usecase.NewCheckCodeUsecase(
 			userRepo,
 			sessionRepo,
+		),
+		profileUc: usecase.NewProfileUsecase(
+			userRepo,
+			cache,
 		),
 	}
 }

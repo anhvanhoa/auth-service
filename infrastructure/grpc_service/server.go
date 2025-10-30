@@ -25,6 +25,7 @@ func NewGRPCServer(
 	}
 	middleware := grpc_service.NewMiddleware(
 		token.NewToken(env.JwtSecret.Access),
+		log,
 	)
 	return grpc_service.NewGRPCServer(
 		config,
@@ -41,8 +42,8 @@ func NewGRPCServer(
 				}
 				return hasPermission != nil && string(hasPermission) == "true"
 			},
-			func(id string) *user_context.UserContext {
-				userData, err := cacher.Get(id)
+			func(at string) *user_context.UserContext {
+				userData, err := cacher.Get(at)
 				if err != nil || userData == nil {
 					return nil
 				}
