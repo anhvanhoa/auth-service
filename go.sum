@@ -8,8 +8,6 @@ github.com/alexedwards/argon2id v1.0.0 h1:wJzDx66hqWX7siL/SRUmgz3F8YMrd/nfX/xHHc
 github.com/alexedwards/argon2id v1.0.0/go.mod h1:tYKkqIjzXvZdzPvADMWOEZ+l6+BD6CtBXMj5fnJppiw=
 github.com/anhvanhoa/service-core v0.0.0-20251029042940-4a3587d68004 h1:/JDF/cTPqhki4pbo+a+EE3JMhVBxfjW8FJaRD2tKZM0=
 github.com/anhvanhoa/service-core v0.0.0-20251029042940-4a3587d68004/go.mod h1:F7bSEcqPiSc+4Ga5VWPvUqrLcLOod3qInZWhsYgnP7Q=
-github.com/anhvanhoa/sf-proto v0.0.0-20251028020101-71e013dbb485 h1:AgjYIB9D5lAN5MEpbrN67r9hUn7t39j4vUEnAmmOftw=
-github.com/anhvanhoa/sf-proto v0.0.0-20251028020101-71e013dbb485/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/anhvanhoa/sf-proto v0.0.0-20251029043758-f7f1bdaa522f h1:7wWm/bthxEBvSMcjZa4ZqGNw5i8mbeAbn5yprTEmReI=
 github.com/anhvanhoa/sf-proto v0.0.0-20251029043758-f7f1bdaa522f/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=

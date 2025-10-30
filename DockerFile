@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -11,25 +11,41 @@ RUN apk add --no-cache git ca-certificates
 RUN git config --global url."https://github.com/".insteadOf "git@github.com:" && \
     git config --global url."https://".insteadOf "git://"
 
-# Set up authentication for private repositories using BuildKit secrets
-RUN --mount=type=secret,id=github_token \
-    if [ -f /run/secrets/github_token ]; then \
-        GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
-        echo "machine github.com login $GITHUB_TOKEN password x-oauth-basic" > ~/.netrc && \
-        chmod 600 ~/.netrc; \
-    fi
+# Avoid interactive prompts from git/go when accessing private repos
+ENV GIT_TERMINAL_PROMPT=0
+# Ensure private repos bypass proxy and sumdb
+ENV GOPRIVATE=github.com/anhvanhoa/*
+ENV GONOSUMDB=github.com/anhvanhoa/*
+
+# Note: We'll mount the GitHub token secret directly on the go commands that need it
 
 # Copy go mod files
 COPY go.mod go.sum ./
 
-# Download dependencies
-RUN go mod tidy
+# Download dependencies with secret-mounted token for private modules
+RUN --mount=type=secret,id=github_token \
+    set -e; \
+    if [ -f /run/secrets/github_token ]; then \
+      GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+      echo "machine github.com login ${GITHUB_TOKEN} password x-oauth-basic" > ~/.netrc; \
+      chmod 600 ~/.netrc; \
+    fi; \
+    go env -w GOPRIVATE=${GOPRIVATE}; \
+    go env -w GONOSUMDB=${GONOSUMDB}; \
+    go mod tidy
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
+# Build the application with secret-mounted token for private modules (in case of new deps)
+RUN --mount=type=secret,id=github_token \
+    set -e; \
+    if [ -f /run/secrets/github_token ]; then \
+      GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+      echo "machine github.com login ${GITHUB_TOKEN} password x-oauth-basic" > ~/.netrc; \
+      chmod 600 ~/.netrc; \
+    fi; \
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
 
 # Final stage
 FROM alpine:latest
@@ -58,7 +74,7 @@ EXPOSE 40064
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:40064/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:40064/health || exit 1
 
 # Run the application
 CMD ["./main"]

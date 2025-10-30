@@ -12,10 +12,10 @@ services:
     networks:
       - sf_network
     environment:
-      - NODE_ENV=${NODE_ENV}
+      - NODE_ENV=production
       - CONFIG_FILE=${CONFIG_FILE}
     volumes:
-      - ${CONFIG_FILE}:/config/${CONFIG_FILE}
+      - ${CONFIG_FILE}:/config/auth_service.config.yaml
     restart: unless-stopped
     healthcheck:
       test:
