@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"auth-service/domain/repository"
-	"errors"
+
+	"github.com/anhvanhoa/service-core/domain/oops"
 )
 
 var (
-	ErrCodeInvalid  = errors.New("mã xác thực không hợp lệ")
-	ErrUserNotFound = errors.New("không tìm thấy người dùng với email này")
+	ErrCodeInvalid  = oops.New("Mã xác thực không hợp lệ")
+	ErrUserNotFound = oops.New("Không tìm thấy người dùng với email này")
 )
 
 type CheckCodeUsecase interface {

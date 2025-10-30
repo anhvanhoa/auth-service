@@ -5,7 +5,6 @@ import (
 	"auth-service/domain/entity"
 	"auth-service/domain/repository"
 	"context"
-	"errors"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	"github.com/anhvanhoa/service-core/common"
 	"github.com/anhvanhoa/service-core/domain/cache"
 	"github.com/anhvanhoa/service-core/domain/log"
+	"github.com/anhvanhoa/service-core/domain/oops"
 	"github.com/anhvanhoa/service-core/domain/queue"
 	"github.com/anhvanhoa/service-core/domain/saga"
 	"github.com/anhvanhoa/service-core/domain/token"
@@ -27,9 +27,9 @@ const (
 )
 
 var (
-	ErrValidateForgotPassword = errors.New("phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
-	ErrCreateSession          = errors.New("không thể tạo phiên làm việc")
-	ErrInvalidCompensateType  = errors.New("loại bù không hợp lệ")
+	ErrValidateForgotPassword = oops.New("Phương thức xác thực không hợp lệ, vui lòng chọn code hoặc token")
+	ErrCreateSession          = oops.New("Không thể tạo phiên làm việc")
+	ErrInvalidCompensateType  = oops.New("Loại bù không hợp lệ")
 )
 
 type ForgotPasswordRes struct {
@@ -120,7 +120,7 @@ func (uc *forgotPasswordUsecaseImpl) ForgotPassword(email, os string, method For
 	var resForgotPassword ForgotPasswordRes
 	user, err := uc.userRepo.GetUserByEmail(email)
 	if err != nil {
-		return resForgotPassword, err
+		return resForgotPassword, ErrUserNotFound
 	}
 	resForgotPassword.User = user.GetInfor()
 	exp := time.Now().Add(constants.ForgotExpiredAt * time.Minute)
