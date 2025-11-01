@@ -10,15 +10,15 @@ import (
 
 func (a *authService) Logout(ctx context.Context, req *proto_auth.LogoutRequest) (*proto_auth.LogoutResponse, error) {
 	if _, err := a.logoutUc.VerifyToken(req.GetRefreshToken()); err != nil {
-		return nil, status.Error(codes.InvalidArgument, "Token không hợp lệ")
+		return nil, status.Error(codes.InvalidArgument, "Đăng xuất thất bại")
 	}
 
 	if err := a.logoutUc.Logout(req.GetRefreshToken()); err != nil {
-		return nil, status.Error(codes.Internal, "Không thể đăng xuất")
+		return nil, status.Error(codes.Internal, "Đăng xuất thất bại")
 	}
 
 	if err := a.cache.Delete(req.GetAccessToken()); err != nil {
-		return nil, status.Errorf(codes.Internal, "Không thể xóa quyền")
+		return nil, status.Errorf(codes.Internal, "Đăng xuất thất bại")
 	}
 
 	return &proto_auth.LogoutResponse{

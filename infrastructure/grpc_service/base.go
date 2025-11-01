@@ -94,7 +94,7 @@ func NewAuthService(
 		),
 		logoutUc: usecase.NewLogoutUsecase(
 			sessionRepo,
-			tokenAccess,
+			tokenRefresh,
 			cache,
 		),
 		verifyAccountUc: usecase.NewVerifyAccountUsecase(
