@@ -16,6 +16,8 @@ github.com/anhvanhoa/sf-proto v0.0.0-20251030140925-9d710758e9ce h1:tZz39H16mMi3
 github.com/anhvanhoa/sf-proto v0.0.0-20251030140925-9d710758e9ce/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/anhvanhoa/sf-proto v0.0.0-20251030174232-9201e3b215ca h1:gYfT4MIzuicXFp2E6+iBQgq5dAlOxM+/OljhuWhgxUA=
 github.com/anhvanhoa/sf-proto v0.0.0-20251030174232-9201e3b215ca/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
+github.com/anhvanhoa/sf-proto v0.0.0-20251114182004-00ed2c713ca0 h1:zzSTp3mS82bkHbskZLWZ0+HQv2zrpKL/7Y8uzAe52/M=
+github.com/anhvanhoa/sf-proto v0.0.0-20251114182004-00ed2c713ca0/go.mod h1:fDjSJFXd2PoPiOod6qKRGVjurABW3IuMERwuqyUf3u0=
 github.com/antlr4-go/antlr/v4 v4.13.1 h1:SqQKkuVZ+zWkMMNkjy5FZe5mr5WURWnlpmOuzYWrPrQ=
 github.com/antlr4-go/antlr/v4 v4.13.1/go.mod h1:GKmUxMtwp6ZgGwZSva4eWPC5mS6vUAmOABFgjdkM7Nw=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
